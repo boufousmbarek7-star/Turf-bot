@@ -1,7 +1,7 @@
 
 import os
 import requests
-from bs4نهار import BeautifulSoup
+from bs4 import BeautifulSoup
 
 # جلب الإعدادات من الأسرار السحابية (GitHub Secrets)
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
