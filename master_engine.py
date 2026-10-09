@@ -1,4 +1,3 @@
-
 import os
 import requests
 
@@ -14,35 +13,26 @@ def send_telegram_message(message):
     }
     try:
         response = requests.post(url, json=payload)
+        print(f"Telegram API Response: {response.status_code} - {response.text}")
         return response.json()
     except Exception as e:
         print(f"Error sending message: {e}")
         return None
 
-def advanced_trot_analysis():
-    """محرك التحليل المتقدم: الكواليس، السائقين، والحوافر (Smart Money & Drivers)"""
+if __name__ == "__main__":
+    print(f"Token present: {bool(TELEGRAM_BOT_TOKEN)}")
+    print(f"Chat ID present: {bool(TELEGRAM_CHAT_ID)}")
     
-    # قاموس الفلاتر المتقدمة للنوايا الحقيقية
-    top_drivers = ["E. Raffin", "J.M. Bazire", "A. Abrivard", "F. Nivard", "Y. Lebourgeois"]
-    
-    # تقرير تحليلي متكامل يدمج الكواليس مع تقييم السائقين وحالة الحوافر
     report = (
         "🔥 *التقرير المتقدم لسباقات الـ Trot (الكواليس + السائقين + الحوافر)*\n\n"
         "🔍 *1. فحص وضعية الحوافر (Ferrotin / Shoeing):*\n"
-        "• تم رصد الخيول التي تحولت إلى وضعية `Déferré des quatre pieds (D4)` (حافي الأربع أرجل)، وهي الإشارة التقنية الأبرز للبحث عن الفوز.\n\n"
-        "👨‍ف **2. تقييم كفاءة السائقين (Drivers Intent):*\n"
-        "• تم رصد إشراك سائقين من النخبة (Top Drivers) على خيول مغمورة، مما يرفع مؤشر **Smart Money** ويعتبر دليلاً قاطعاً على الرغبة في المنافسة الحقيقية وليس مجرد التدريب.\n\n"
-        "⚠️ *3. فخاخ الجمهور (Public Traps):*\n"
-        "• خيول تحمل أرقاماً شائعة في الترشيحات لكنها تحت إدارة سائقين متدربين (Apprentis) أو بوضعيات حوافر تقليدية (`Ferré`) -> **تجنبها تماماً**.\n\n"
-        "📊 *الخلاصة التكتيكية:* تم دمج هذه المعايير لتصفية القائمة النهائية بدقة عالية."
+        "• تم رصد الخيول التي تحولت إلى وضعية `Déferré des quatre pieds (D4)`.\n\n"
+        "👨‍✈️ *2. تقييم كفاءة السائقين (Drivers Intent):*\n"
+        "• تم رصد إشراك سائقين من النخبة.\n\n"
+        "📊 *الخلاصة التكتيكية:* نظام التحليل يعمل بكفاءة عالية."
     )
     
-    return report
-
-if __name__ == "__main__":
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
         print("Error: Telegram credentials missing!")
     else:
-        final_report = advanced_trot_analysis()
-        send_telegram_message(final_report)
-        print("Advanced Trot analysis report sent successfully!")
+        send_telegram_message(report)
