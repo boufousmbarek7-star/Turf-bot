@@ -25,7 +25,7 @@ def mathematical_probability_engine():
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
         "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
     }
-    
+
     races_links = []
 
     try:
@@ -50,7 +50,7 @@ def mathematical_probability_engine():
         for title, link in races_links[:2]:
             simulated_score = 92.4 
             implied_prob = 24.5
-            
+
             report_lines.append(
                 f"🏁 *السباق:* `{title}`\n"
                 f"📊 *التحليل الرياضي والاحتمالي:*\n"
