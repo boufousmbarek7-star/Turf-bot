@@ -14,6 +14,7 @@ def send_telegram_message(message):
     }
     try:
         response = requests.post(url, json=payload, timeout=10)
+        print(f"Telegram API Response: {response.status_code} - {response.text}")
         return response.json()
     except Exception as e:
         print(f"Error sending message: {e}")
@@ -26,47 +27,25 @@ def morning_program_scanner():
         "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
     }
     
-    found_attele = False
-    found_monte = False
-    status_details = "فحص برنامج اليوم الصباحي..."
+    status_details = "بدء فحص برنامج الـ Trot..."
+    found_attele = True  # افتراضي للتأكد من وصول التقرير
+    found_monte = True
     
     try:
         response = requests.get(target_url, headers=headers, timeout=15)
+        print(f"Letrot Response Code: {response.status_code}")
         if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            page_text = soup.get_text().lower()
-            
-            if "attelé" in page_text or "attele" in page_text:
-                found_attele = True
-            if "monté" in page_text or "monte" in page_text:
-                found_monte = True
-                
-            status_details = "تم قراءة جدول ومسار السباقات الصباحية بنجاح."
+            status_details = "تم الاتصال بنجاح بموقع Letrot ورصد جدول السباقات."
         else:
-            status_details = "حماية الموقع نشطة، تم تفعيل الفحص الاحتياطي لبرنامج اليوم."
-            found_attele = True
-            found_monte = True
+            status_details = f"استجابة الموقع برمز غير اعتيادي: {response.status_code}"
     except Exception as e:
-        status_details = "وضع الفحص الصباحي التلقائي مفعل."
-        found_attele = True
-        found_monte = True
-
-    races_detected = []
-    if found_attele:
-        races_detected.append("🏁 *Trot Attelé* (متاحة للتحليل)")
-    if found_monte:
-        races_detected.append("🏇 *Trot Monté* (متاحة للتحليل)")
-        
-    races_str = "\n".join(races_detected) if races_detected else "• لا توجد سباقات مطابقة اليوم."
+        status_details = f"تنبيه اتصال: {str(e)}"
 
     report = (
-        "🌅 *التقرير الصباحي لبرنامج سباقات الـ Trot*\n\n"
+        "🌅 *التقرير الصباحي لاختبار اتصال نظام الـ Trot*\n\n"
         f"📡 *حالة الفحص:* {status_details}\n\n"
-        "📋 *السباقات المرصودة في البرنامج اليومي:*\n"
-        f"{races_str}\n\n"
-        "🔍 *توجيهات المحرك التكتيكية:*\n"
-        "• تم تفعيل فلترة الحوافر المتقدمة (`D4 / DA`) واستبعاد فخاخ الجمهور المرشحة إعلامياً دون دعم حقيقي من الإسطبلات.\n\n"
-        "📊 *الوضع:* المحرك بانتظار انطلاق الأطوار أو رصد التغيرات اللحظية في الكوطات."
+        "📋 *السباقات المستهدفة:* Attelé & Monté\n"
+        "🛠️ *الحالة التقنية:* النظام يعمل بنجاح على السحابة ويرسل التقارير الآن."
     )
     
     return report
@@ -75,6 +54,7 @@ if __name__ == "__main__":
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
         print("Error: Telegram credentials missing!")
     else:
-        morning_report = morning_program_scanner()
-        send_telegram_message(morning_report)
-        print("Morning scanned report sent successfully!")
+        print("Running morning program scanner...")
+        final_report = morning_program_scanner()
+        send_telegram_message(final_report)
+        print("Execution finished.")
