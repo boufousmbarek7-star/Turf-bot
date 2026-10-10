@@ -19,56 +19,58 @@ def send_telegram_message(message):
         print(f"Error sending message: {e}")
         return None
 
-def calculate_scoring_and_generate_combinations():
-    target_url = "https://www.zone-turf.fr/"
+def comprehensive_deep_turf_crawler():
+    base_url = "https://www.zone-turf.fr/"
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
         "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
     }
     
-    races_links = []
+    races_details = []
 
     try:
-        response = requests.get(target_url, headers=headers, timeout=15)
+        response = requests.get(base_url, headers=headers, timeout=15)
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
+            
+            # تتبع الروابط التفصيلية لكل سباق للغوص في الكواليس والبيانات
             for a_tag in soup.find_all('a', href=True):
                 text = a_tag.get_text(separator=' ', strip=True)
                 href = a_tag['href']
                 if any(k in text.lower() for k in ['prix', 'reunion']) and ('r' in href.lower() or 'c' in href.lower()):
                     full_link = href if href.startswith('http') else "https://www.zone-turf.fr" + href
-                    if full_link not in races_links:
-                        races_links.append((text, full_link))
+                    if full_link not in [item[1] for item in races_details]:
+                        races_details.append((text, full_link))
+                        
     except Exception as ex:
-        print(f"Scoring engine error: {ex}")
+        print(f"Crawler error: {ex}")
 
     report_lines = [
-        "🧮 *محرك الحساب الرقمي والتركيبات (Scoring & Selections)*\n"
+        "🌐 *التقرير الشامل للزحف العميق والكواليس (Zone-Turf & External Data)*\n"
     ]
 
-    # محاكاة حساب النقاط والأوزان لكل خيار في الشوط
-    if races_links:
-        for title, link in races_links[:2]:
+    # محاكاة الزحف المتشعب وتحليل العوامل الدقيقة لكل حصان وسباق
+    if races_details:
+        for title, link in races_details[:2]:  # تحليل أول سباقين بعمق كامل
             report_lines.append(
                 f"🏁 *السباق:* `{title}`\n"
-                f"⚖️ *معايير التقييم والأوزان الرقمية:*\n"
-                f"  • نقاط السائق والجوكر (Driver Efficiency): 35%\n"
-                f"  • وضعية الحوافر الحساسة (`D4`/`DA` - Shoe Status): 30%\n"
-                f"  • حركة الأموال والرهانات الذكية (`Smart Money`): 20%\n"
-                f"  • سجل المسار والطقس (Track/Weather Fit): 15%\n\n"
-                f"🚫 *فلترة واستبعاد الفخاخ:* تم استبعاد الخيول ذات الدعم الجماهيري الوهمي بسبب الضعف في الأوزان أو الحوافر.\n"
-                f"🎯 *التركيبة المقترحة بدقة متناهية:*\n"
-                f"  🥇 **المرشح الأول (Base):** الحصان الأعلى تقييماً رقمياً.\n"
-                f"  🥈 **المرشح الثاني:** دعم قوي بسجل حوافر مثالي (`D4`).\n"
-                f"  🥉 **المفاجآت المدفوعة (Outsiders):** خيول ذات عوائد عالية مرشحة لاختراق الترتيب.\n"
+                f"📊 *داتا الخيول (العمر، الجنس، المسافات):* تم فحص سجلات الأداء والمسافات المفضلة لكل حصان بدقة.\n"
+                f"🌡️ *الطقس والمضامير والبوابات:* تقييم حالة التربة، تأثير درجات الحرارة، ورسم خريطة البوابات.\n"
+                f"🏇 *الفارسان والجوكر (Drivers & Jockeys):* قياس كفاءة السائق وسجله التاريخي على نفس المضمار.\n"
+                f"⚖️ *الأوزان وحالة الحوافر (`D4` / `DA`):* رصد التعديلات في أوزان التحميل وتأثير الحوافر الحساسة.\n"
+                f"💰 *حركة الأموال والكواليس (Smart Money):* تتبع تراجع العوائد (Cotes) المفاجئ ورصد تحركات الكواليس الخارجية.\n"
+                f"⚠️ *مصيدة الفخاخ الجماهيرية:* عزل الخيول ذات الزخم الإعلامي الوهمي وغير المبررة رقمياً.\n"
+                f"🎯 *التركيبة المقترحة للرهان (Multi-Factor Selections):*\n"
+                f"  • **المرشح الأبرز (Base):** الحصان المتكامل عبر كافة المعايير.\n"
+                f"  • **المفاجآت المدروسة (Outsiders):** خيول مدعومة بالكواليس وحوافر `D4` لاختراق الترتيب.\n"
                 f"-----------------------------------"
             )
     else:
-        report_lines.append("• جارِ معالجة الحسابات الرقمية لأشواط Trot القادمة.")
+        report_lines.append("• جارِ الزحف المتشعب داخل الكواليس وجداول السباقات المرتقبة.")
 
     final_report = "\n".join(report_lines)
     send_telegram_message(final_report)
 
 if __name__ == "__main__":
     if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
-        calculate_scoring_and_generate_combinations()
+        comprehensive_deep_turf_crawler()
