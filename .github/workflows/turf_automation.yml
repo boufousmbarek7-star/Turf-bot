@@ -1,15 +1,15 @@
-name: Autonomous Turf Cloud Engine
+name: French Trot Racing Engine
 
 on:
   schedule:
-    - cron: '0 08 * * *'
+    - cron: '0 8 * * *'
   workflow_dispatch:
 
 jobs:
-  run-turf-bot:
+  run-engine:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Python
@@ -17,11 +17,11 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: |
           pip install requests beautifulsoup4
 
-      - name: Run Master Turf Engine
+      - name: Run Master Engine
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
