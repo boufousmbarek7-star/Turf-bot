@@ -3,65 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trot Racing Vision Analyzer</title>
+    <title>Race Vision Analyzer</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #0f172a; color: #fff; padding: 20px; text-align: center; }
-        .container { max-width: 400px; margin: auto; background: #1e293b; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0e1621;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            max-width: 400px;
+            width: 100%;
+            background: #17212b;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        h2 { margin-bottom: 10px; font-size: 22px; }
+        p { color: #8d96a0; font-size: 14px; margin-bottom: 20px; }
+        .upload-btn {
+            background: #2481cc;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .upload-btn:hover { background: #1b6ca8; }
         input[type="file"] { display: none; }
-        .upload-btn { background: #3b82f6; color: white; padding: 12px 20px; border-radius: 8px; cursor: pointer; display: inline-block; margin-top: 15px; font-weight: bold; width: 80%; }
-        #preview { max-width: 100%; border-radius: 8px; margin-top: 15px; display: none; }
-        .analyze-btn { background: #10b981; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 16px; cursor: pointer; width: 100%; margin-top: 15px; font-weight: bold; display: none; }
-        .loading { display: none; margin-top: 15px; color: #f59e0b; font-weight: bold; }
+        #preview {
+            max-width: 100%;
+            margin-top: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .loading {
+            display: none;
+            margin-top: 15px;
+            color: #ffaa00;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>🏇 تحليل سباقات Trot</h2>
-        <p>التقط صورة لجدول السباق (Race Card) لتحليله فورا واستخراج النسب الرياضية.</p>
-        
-        <label for="file-input" class="upload-btn">📸 التقاط أو رفع صورة السباق</label>
-        <input type="file" id="file-input" accept="image/*" capture="environment">
-        
-        <img id="preview" alt="معاينة الصورة">
-        
-        <div class="loading" id="loading-text">🔄 جاري قراءة البيانات ومعالجة النموذج الرياضي...</div>
-        <button class="analyze-btn" id="analyze-btn" onclick="sendImageToEngine()">🚀 بدء التحليل الفوري</button>
-    </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+<div class="container">
+    <h2>🐎 Trot تحليل سباقات</h2>
+    <p>التقط أو ارفع صورة لجدول السباق (Race Card) لتحليله فوراً واستخراج النسب الرياضية.</p>
+    
+    <label for="fileInput" class="upload-btn">📸 التقط أو رفع صورة السباق</label>
+    <input type="file" id="fileInput" accept="image/*">
 
-        const fileInput = document.getElementById('file-input');
-        const preview = document.getElementById('preview');
-        const analyzeBtn = document.getElementById('analyze-btn');
-        const loadingText = document.getElementById('loading-text');
+    <img id="preview" alt="معاينة الصورة">
+    <div id="loadingText" class="loading">⏳ جاري معالجة الصورة وتحليل البيانات...</div>
+</div>
 
-        fileInput.addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                    analyzeBtn.style.display = 'block';
-                }
-                reader.readAsDataURL(file);
-            }
-        });
+<script>
+    let tg = window.Telegram.WebApp;
+    tg.expand(); // توسيع التطبيق لملء الشاشة
 
-        function sendImageToEngine() {
-            analyzeBtn.style.display = 'none';
-            loadingText.style.display = 'block';
-            
-            setTimeout(() => {
-                loadingText.innerHTML = "✅ تم استخراج البيانات والتحليل بنجاح! سيتم إرسال التقرير لدردشة البوت.";
+    const fileInput = document.getElementById('fileInput');
+    const preview = document.getElementById('preview');
+    const loadingText = document.getElementById('loadingText');
+
+    fileInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                loadingText.style.display = 'block';
+
+                // محاكاة إرسال البيانات وإغلاق التطبيق ليعود للدردشة بالنتيجة
                 setTimeout(() => {
-                    tg.close();
+                    loadingText.innerText = "✅ تم استخراج البيانات والتحليل بنجاح!";
+                    
+                    // إرسال بيانات وهمية أو إغلاق التطبيق ليعود البوت للدردشة
+                    setTimeout(() => {
+                        tg.sendData(JSON.stringify({ action: "analyze_race", status: "success" }));
+                        tg.close();
+                    }, 1000);
                 }, 2000);
-            }, 3000);
+            }
+            reader.readAsDataURL(file);
         }
-    </script>
+    });
+</script>
+
 </body>
 </html>
