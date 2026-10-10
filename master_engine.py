@@ -1,77 +1,29 @@
-import os
-import requests
-from bs4 import BeautifulSoup
+name: French Trot Racing Engine
 
-TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
-TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
+on:
+  schedule:
+    - cron: '0 8 * * *'  # يعمل تلقائياً كل يوم على الساعة 08:00 صباحاً
+  workflow_dispatch:      # يتيح لك التشغيل اليدوي في أي وقت
 
-def send_telegram_message(message):
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    payload = {
-        "chat_id": TELEGRAM_CHAT_ID,
-        "text": message,
-        "parse_mode": "Markdown"
-    }
-    try:
-        response = requests.post(url, json=payload, timeout=10)
-        return response.json()
-    except Exception as e:
-        print(f"Error sending message: {e}")
-        return None
+jobs:
+  run-engine:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-def mathematical_probability_engine():
-    target_url = "https://www.zone-turf.fr/"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-        "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
-    }
-    
-    races_links = []
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
 
-    try:
-        response = requests.get(target_url, headers=headers, timeout=15)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            for a_tag in soup.find_all('a', href=True):
-                text = a_tag.get_text(separator=' ', strip=True)
-                href = a_tag['href']
-                if any(k in text.lower() for k in ['prix', 'reunion']) and ('r' in href.lower() or 'c' in href.lower()):
-                    full_link = href if href.startswith('http') else "https://www.zone-turf.fr" + href
-                    if full_link not in races_links:
-                        races_links.append((text, full_link))
-    except Exception as ex:
-        print(f"Math engine error: {ex}")
+      - name: Install dependencies
+        run: |
+          pip install requests beautifulsoup4
 
-    report_lines = [
-        "📐 *المحرك الرياضي الاحتمالي لسباقات Trot*\n"
-    ]
-
-    # محاكاة تطبيق النماذج الرياضية واحتمالات الرهان (Probability & Scoring Models)
-    if races_links:
-        for title, link in races_links[:2]:
-            # معادلة التقييم الرياضي المرجح (Weighted Scoring Formula)
-            # Score = (Driver * 0.35) + (Shoe/D4 * 0.30) + (Smart Money * 0.20) + (Track Fit * 0.15)
-            simulated_score = 92.4 
-            implied_prob = 24.5 # النسبة الاحتمالية المحولة من الرهان Cote
-            
-            report_lines.append(
-                f"🏁 *السباق:* `{title}`\n"
-                f"📊 *التحليل الرياضي والاحتمالي:*\n"
-                f"  • **درجة الأداء الرياضي (Weighted Score):** `{simulated_score}/100`\n"
-                f"  • **الاحتمال الرياضي الضمني (Implied Probability):** `{implied_prob}%`\n"
-                f"  • **معادلة التقييم:** `(Driver 35% + D4/DA 30% + Smart Money 20% + Track 15%)`\n\n"
-                f"🚫 *فلترة الانحرافات الإحصائية:* تم استبعاد الخيول التي تمتلك احتمالية جماهيرية وهمية تفوق قيمتها الرقمية الفعلية.\n"
-                f"🎯 *التركيبة الاحتمالية المقترحة:*\n"
-                f"  🥇 *المرشح الأول (Base - أعلى Score رياضياتي):* حصان متوازن إحصائياً.\n"
-                f"  🥈 *المفاجأة المدروسة (Outsider Value):* حصان ذو عوائد عالية واحتمال انحراف إيجابي مدعوم بحوافر `D4`.\n"
-                f"-----------------------------------"
-            )
-    else:
-        report_lines.append("• جارِ معالجة النماذج الرياضية للأشواط الحية.")
-
-    final_report = "\n".join(report_lines)
-    send_telegram_message(final_report)
-
-if __name__ == "__main__":
-    if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
-        mathematical_probability_engine()
+      - name: Run Master Engine
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python master_engine.py
